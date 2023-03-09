@@ -17,3 +17,15 @@
 ৭. local storage আর session storage কখন কোনটা ইউজ করতে হয় সেটা জানতে হবে 
 
 ৮. Cookies, local storage, session storage এর মধ্যে পার্থক্য কি সেটা জানতে হবে। 
+
+
+===========================================
+Interview Questions
+1. How does Browser work?
+2. What is rerender in Browser?
+3. What is the difference between an alert box and confirmation box?
+4. What are JavaScript Cookie?
+5. Difference between Local Storage and Session Storage?
+6. What should you use? Cookie or Local Storage or Session Storage
+7. Tell me 2 difference between BOM and DOM
+8. Can you discuss the types of Browser API?
