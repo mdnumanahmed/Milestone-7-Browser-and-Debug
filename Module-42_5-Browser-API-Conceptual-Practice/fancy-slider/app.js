@@ -2,6 +2,7 @@ const imagesArea = document.querySelector('.images');
 const gallery = document.querySelector('.gallery');
 const galleryHeader = document.querySelector('.gallery-header');
 const searchBtn = document.getElementById('search-btn');
+const errMsg = document.getElementById('err-msg')
 const sliderBtn = document.getElementById('create-slider');
 const sliderContainer = document.getElementById('sliders');
 // selected image 
@@ -19,6 +20,7 @@ const showImages = (images) => {
   gallery.innerHTML = '';
   // show gallery title
   galleryHeader.style.display = 'flex';
+  console.log(images);
   images.forEach(image => {
     let div = document.createElement('div');
     div.className = 'col-lg-3 col-md-4 col-xs-6 img-item mb-2';
@@ -31,7 +33,18 @@ const showImages = (images) => {
 const getImages = (query) => {
   fetch(`https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`)
     .then(response => response.json())
-    .then(data => showImages(data.hitS))
+    .then(data => {
+      if(data.hits.length === 0){
+        errMsg.innerHTML = 'Data not found'
+        imagesArea.style.display = 'none';
+        gallery.innerHTML = '';
+        // show gallery title
+        galleryHeader.style.display = 'none';
+      }else{
+        errMsg.innerHTML = ''
+        showImages(data.hits)
+      }
+    })
     .catch(err => console.log(err))
 }
 
@@ -44,7 +57,8 @@ const selectItem = (event, img) => {
   if (item === -1) {
     sliders.push(img);
   } else {
-    alert('Hey, Already added !')
+    sliders = sliders.filter(item => item != img)
+    element.classList.remove('added');
   }
 }
 var timer
@@ -68,14 +82,21 @@ const createSlider = () => {
   // hide image aria
   imagesArea.style.display = 'none';
   const duration = document.getElementById('duration').value || 1000;
-  sliders.forEach(slide => {
+  if(duration < 0){
+    errMsg.innerHTML = 'Please provide only positive value'
+    imagesArea.style.display = 'block';
+    document.querySelector('.main').style.display = 'none';
+    return
+  }else{
+    sliders.forEach(slide => {
     let item = document.createElement('div')
     item.className = "slider-item";
     item.innerHTML = `<img class="w-100"
     src="${slide}"
     alt="">`;
     sliderContainer.appendChild(item)
-  })
+    })
+  }
   changeSlide(0)
   timer = setInterval(function () {
     slideIndex++;
@@ -113,10 +134,27 @@ searchBtn.addEventListener('click', function () {
   document.querySelector('.main').style.display = 'none';
   clearInterval(timer);
   const search = document.getElementById('search');
-  getImages(search.value)
-  sliders.length = 0;
+  if(search.value.length === 0){
+    errMsg.innerHTML = 'Please write something to search'
+    imagesArea.style.display = 'none';
+    gallery.innerHTML = '';
+    // show gallery title
+    galleryHeader.style.display = 'none';
+  }else{
+    errMsg.innerHTML = ''
+    getImages(search.value)
+    search.value = ''
+    sliders.length = 0;
+  }
 })
 
 sliderBtn.addEventListener('click', function () {
   createSlider()
+})
+
+document.getElementById('search').addEventListener('keypress', function(e){
+  if(e.key === 'Enter'){
+    e.preventDefault()
+    getImages(e.target.value)
+  }
 })
